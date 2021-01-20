@@ -1,5 +1,6 @@
 package guru.springframework.controllers;
 
+import guru.springframework.services.IngredientService;
 import guru.springframework.services.RecipeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
