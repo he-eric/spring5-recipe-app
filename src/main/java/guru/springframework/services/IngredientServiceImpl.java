@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 import java.util.Set;
 
@@ -50,6 +51,7 @@ public class IngredientServiceImpl implements IngredientService {
         return foundIngredient.get();
     }
 
+    //todo clean up show ingredients page
     @Override
     @Transactional
     public IngredientCommand saveIngredientCommand(IngredientCommand command) {
@@ -77,11 +79,22 @@ public class IngredientServiceImpl implements IngredientService {
             else {
                 recipe.addIngredient(ingredientCommandToIngredient.convert(command));
             }
+
             Recipe savedRecipe = recipeRepository.save(recipe);
-            return ingredientToIngredientCommand.convert(savedRecipe.getIngredients().stream()
+
+            Optional<Ingredient> savedIngredientOptional = savedRecipe.getIngredients().stream()
                     .filter(recipeIngred -> recipeIngred.getId().equals(command.getId()))
-                    .findFirst()
-                    .get());
+                    .findFirst();
+
+            if (!savedIngredientOptional.isPresent()) {
+                savedIngredientOptional = savedRecipe.getIngredients().stream()
+                            .filter(recipeIngred -> recipeIngred.getDescription().equals(command.getDescription()))
+                            .filter(recipeIngred -> recipeIngred.getAmount().equals(command.getAmount()))
+                            .filter(recipeIngred -> recipeIngred.getUom().getId().equals(command.getUom().getId()))
+                            .findFirst();
+            }
+
+            return ingredientToIngredientCommand.convert(savedIngredientOptional.get());
         }
     }
 }
