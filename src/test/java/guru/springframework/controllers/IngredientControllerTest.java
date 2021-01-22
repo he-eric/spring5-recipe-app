@@ -102,7 +102,6 @@ public class IngredientControllerTest {
                 .andExpect(view().name("redirect:/recipe/1/ingredient/3/show"));
     }
 
-    //todo run the unit test
     @Test
     public void newIngredientForm() throws Exception {
         RecipeCommand command = new RecipeCommand();
@@ -118,5 +117,14 @@ public class IngredientControllerTest {
                 .andExpect(model().attributeExists("uomList"));
 
         verify(recipeService).findCommandById(anyLong());
+    }
+
+    @Test
+    public void deleteIngredient() throws Exception {
+        mockMvc.perform(get("/recipe/1/ingredient/2/delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/recipe/1/ingredients"));
+
+        verify(ingredientService).deleteById(1L, 2L);
     }
 }
